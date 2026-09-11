@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Record Management System</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Student Record Management System</h1>
+            <p class="subtitle">A web platform for managing student records and academic information.</p>
+            <a class="google-login" href="/login">Sign in with Google</a>
+        </header>
+
+        {{ERROR_BANNER}}
+
+        <section class="card">
+            <h2>Add Student</h2>
+            <form action="/add" method="POST" class="student-form">
+                <div class="form-row">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-row">
+                    <label for="roll_no">Roll Number</label>
+                    <input type="text" id="roll_no" name="roll_no" required>
+                </div>
+                <div class="form-row">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" name="department" required>
+                </div>
+                <div class="form-row">
+                    <label for="year">Year</label>
+                    <input type="number" id="year" name="year" min="1" max="5" required>
+                </div>
+                <div class="form-row">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-row">
+                    <label for="course">Course (optional)</label>
+                    <input type="text" id="course" name="course" placeholder="e.g. B.Tech CSE">
+                </div>
+                <div class="form-row">
+                    <label for="cgpa">CGPA (optional)</label>
+                    <input type="text" id="cgpa" name="cgpa" placeholder="e.g. 8.6">
+                </div>
+                <div class="additional-section">
+                    <div class="additional-section-heading">
+                        <h3>Additional Information</h3>
+                        <button type="button" id="add-extra-field" class="add-section-button">+ Add section</button>
+                    </div>
+                    <div id="extra-fields">
+                        <div class="extra-field">
+                            <input type="text" class="extra-heading-input" placeholder="Heading, e.g. Scholarship">
+                            <input type="text" class="extra-value-input" placeholder="Value, e.g. Merit award">
+                        </div>
+                    </div>
+                    <input type="hidden" id="extra-info" name="extra_info">
+                </div>
+                <button type="submit">Add Student</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <div class="section-heading">
+                <h2>Student Records</h2>
+                <a class="export-link" href="/export">Download Excel</a>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Serial No</th>
+                            <th>Name</th>
+                            <th>Roll No</th>
+                            <th>Department</th>
+                            <th>Year</th>
+                            <th>Email</th>
+                            {{CUSTOM_HEADERS}}
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ROWS}}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+    <script>
+        const form = document.querySelector('.student-form');
+        const extraFields = document.getElementById('extra-fields');
+        const extraInfo = document.getElementById('extra-info');
+
+        document.getElementById('add-extra-field').addEventListener('click', () => {
+            const field = document.createElement('div');
+            field.className = 'extra-field';
+            field.innerHTML = '<input type="text" class="extra-heading-input" placeholder="Heading">'
+                + '<input type="text" class="extra-value-input" placeholder="Value">';
+            extraFields.appendChild(field);
+            field.querySelector('.extra-heading-input').focus();
+        });
+
+        form.addEventListener('submit', () => {
+            const sections = [];
+            extraFields.querySelectorAll('.extra-field').forEach((field) => {
+                const heading = field.querySelector('.extra-heading-input').value.trim();
+                const value = field.querySelector('.extra-value-input').value.trim();
+                if (heading && value) {
+                    sections.push(encodeURIComponent(heading) + '=' + encodeURIComponent(value));
+                }
+            });
+            extraInfo.value = sections.join('&');
+        });
+    </script>
+</body>
+</html>
